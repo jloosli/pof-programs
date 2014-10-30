@@ -1,373 +1,427 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if ( !defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 class Power_of_Moms_Programs_Settings {
 
-	/**
-	 * The single instance of Power_of_Moms_Programs_Settings.
-	 * @var 	object
-	 * @access  private
-	 * @since 	1.0.0
-	 */
-	private static $_instance = null;
+    /**
+     * The single instance of Power_of_Moms_Programs_Settings.
+     * @var    object
+     * @access   private
+     * @since    1.0.0
+     */
+    private static $_instance = null;
 
-	/**
-	 * The main plugin object.
-	 * @var 	object
-	 * @access  public
-	 * @since 	1.0.0
-	 */
-	public $parent = null;
+    /**
+     * The main plugin object.
+     * @var    object
+     * @access   public
+     * @since    1.0.0
+     */
+    public $parent = null;
 
-	/**
-	 * Prefix for plugin settings.
-	 * @var     string
-	 * @access  public
-	 * @since   1.0.0
-	 */
-	public $base = '';
+    /**
+     * Prefix for plugin settings.
+     * @var     string
+     * @access  public
+     * @since   1.0.0
+     */
+    public $base = '';
 
-	/**
-	 * Available settings for plugin.
-	 * @var     array
-	 * @access  public
-	 * @since   1.0.0
-	 */
-	public $settings = array();
+    /**
+     * Available settings for plugin.
+     * @var     array
+     * @access  public
+     * @since   1.0.0
+     */
+    public $settings = array();
 
-	public function __construct ( $parent ) {
-		$this->parent = $parent;
+    /**
+     * Active programs
+     * @var array
+     * @access public
+     * @since  2.0.0
+     */
+    public $programs = array();
 
-		$this->base = 'pom_';
+    public function __construct( $parent ) {
+        $this->parent = $parent;
 
-		// Initialise settings
-		add_action( 'init', array( $this, 'init_settings' ), 11 );
+        $this->base = 'pom_';
 
-		// Register plugin settings
-		add_action( 'admin_init' , array( $this, 'register_settings' ) );
+        // Initialise settings
+        add_action( 'init', array( $this, 'init_settings' ), 11 );
 
-		// Add settings page to menu
-		add_action( 'admin_menu' , array( $this, 'add_menu_item' ) );
+        // Register plugin settings
+        add_action( 'admin_init', array( $this, 'register_settings' ) );
 
-		// Add settings link to plugins page
-		add_filter( 'plugin_action_links_' . plugin_basename( $this->parent->file ) , array( $this, 'add_settings_link' ) );
-	}
+        // Add settings page to menu
+        add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
-	/**
-	 * Initialise settings
-	 * @return void
-	 */
-	public function init_settings () {
-		$this->settings = $this->settings_fields();
-	}
+        // Add settings link to plugins page
+        add_filter( 'plugin_action_links_' . plugin_basename( $this->parent->file ), array(
+                $this,
+                'add_settings_link'
+            ) );
 
-	/**
-	 * Add settings page to admin menu
-	 * @return void
-	 */
-	public function add_menu_item () {
-		$page = add_options_page( __( 'POM Settings', 'power-of-moms-programs' ) , __( 'POM Settings', 'power-of-moms-programs' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
-		add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
-	}
+        // Load up active programs
+        $this->programs = $this->loadActivePrograms();
 
-	/**
-	 * Load settings JS & CSS
-	 * @return void
-	 */
-	public function settings_assets () {
+    }
 
-		// We're including the farbtastic script & styles here because they're needed for the colour picker
-		// If you're not including a colour picker field then you can leave these calls out as well as the farbtastic dependency for the wpt-admin-js script below
-		wp_enqueue_style( 'farbtastic' );
-    	wp_enqueue_script( 'farbtastic' );
+    /**
+     * Initialise settings
+     * @return void
+     */
+    public function init_settings() {
+        $this->settings = $this->settings_fields();
+    }
 
-    	// We're including the WP media scripts here because they're needed for the image upload field
-    	// If you're not including an image upload then you can leave this function call out
-    	wp_enqueue_media();
+    /**
+     * Add settings page to admin menu
+     * @return void
+     */
+    public function add_menu_item() {
+        $page = add_options_page( __( 'POM Settings', 'power-of-moms-programs' ), __( 'POM Settings', 'power-of-moms-programs' ), 'manage_options', $this->parent->_token . '_settings', array(
+                $this,
+                'settings_page'
+            ) );
+        add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
+    }
 
-    	wp_register_script( $this->parent->_token . '-settings-js', $this->parent->assets_url . 'js/settings' . $this->parent->script_suffix . '.js', array( 'farbtastic', 'jquery' ), '1.0.0' );
-    	wp_enqueue_script( $this->parent->_token . '-settings-js' );
-	}
+    /**
+     * Load settings JS & CSS
+     * @return void
+     */
+    public function settings_assets() {
 
-	/**
-	 * Add settings link to plugin list table
-	 * @param  array $links Existing links
-	 * @return array 		Modified links
-	 */
-	public function add_settings_link ( $links ) {
-		$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'power-of-moms-programs' ) . '</a>';
-  		array_push( $links, $settings_link );
-  		return $links;
-	}
+        // We're including the farbtastic script & styles here because they're needed for the colour picker
+        // If you're not including a colour picker field then you can leave these calls out as well as the farbtastic dependency for the wpt-admin-js script below
+        wp_enqueue_style( 'farbtastic' );
+        wp_enqueue_script( 'farbtastic' );
 
-	/**
-	 * Get available programs from the programs directory
-	 * @return array
-	 */
-	private function getAvailablePrograms() {
-		// Get the files
-		$files = scandir($this->parent->programs_dir);
+        // We're including the WP media scripts here because they're needed for the image upload field
+        // If you're not including an image upload then you can leave this function call out
+        wp_enqueue_media();
 
-		// Return only the classes
-		$files = array_filter($files, function($file) {
-			return strpos($file,'class') === 0;
-		});
+        wp_register_script( $this->parent->_token . '-settings-js', $this->parent->assets_url . 'js/settings' . $this->parent->script_suffix . '.js', array(
+                'farbtastic',
+                'jquery'
+            ), '1.0.0' );
+        wp_enqueue_script( $this->parent->_token . '-settings-js' );
+    }
 
-		// Format the programs
-		$programs = [];
-		foreach($files as $file) {
-			$key = str_replace("class-","",$file);
-			$key = str_replace(".php","", $key);
-			$program = ucwords(str_replace("-"," ", $key));
-			if(strpos($key,"-settings")) {
-				$programs[str_replace("-settings","",$key)]['has-settings'] = true;
-			} else {
-				$programs[$key]['name'] = $program;
-				if(empty($programs[$key]['has-settings'])){
-					$programs[$key]['has-settings']= false;
-				}
-			}
-		}
-		return $programs;
-	}
+    /**
+     * Add settings link to plugin list table
+     *
+     * @param  array $links Existing links
+     *
+     * @return array        Modified links
+     */
+    public function add_settings_link( $links ) {
+        $settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'power-of-moms-programs' ) . '</a>';
+        array_push( $links, $settings_link );
 
-	public function getActivePrograms() {
-		return get_option('pom_active_programs');
-	}
+        return $links;
+    }
 
-	/**
-	 * Build settings fields
-	 * @return array Fields to be displayed on settings page
-	 */
-	private function settings_fields () {
+    /**
+     * Get available programs from the programs directory
+     * @return array
+     */
+    private function getAvailablePrograms() {
+        // Get the files
+        $files = scandir( $this->parent->programs_dir );
 
-		$availablePrograms    = array_map(function($program){
-				return $program['name'];
-			},
-			$this->getAvailablePrograms()
-		);
-		$settings['standard'] = array(
-			'title'					=> __( 'Active Programs', 'power-of-moms-programs' ),
-			'description'			=> __( 'Select all the active programs you want to have active.', 'power-of-moms-programs' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'active_programs',
-					'label'			=> __( 'Active Programs', 'power-of-moms-programs' ),
-					'description'	=> __( 'Select the programs you want to be active.', 'power-of-moms-programs' ),
-					'type'			=> 'checkbox_multi',
-					'options'		=> $availablePrograms,
-					'default'		=> array()
-				)
-			)
-		);
+        // Return only the classes
+        $files = array_filter( $files, function ( $file ) {
+            return strpos( $file, 'class' ) === 0;
+        } );
 
-		$settings['extra'] = array(
-			'title'					=> __( 'Extra', 'power-of-moms-programs' ),
-			'description'			=> __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
-			'fields'				=> array(
-				array(
-					'id' 			=> 'number_field',
-					'label'			=> __( 'A Number' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'power-of-moms-programs' ),
-					'type'			=> 'number',
-					'default'		=> '',
-					'placeholder'	=> __( '42', 'power-of-moms-programs' )
-				),
-				array(
-					'id' 			=> 'colour_picker',
-					'label'			=> __( 'Pick a colour', 'power-of-moms-programs' ),
-					'description'	=> __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'power-of-moms-programs' ),
-					'type'			=> 'color',
-					'default'		=> '#21759B'
-				),
-				array(
-					'id' 			=> 'an_image',
-					'label'			=> __( 'An Image' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'power-of-moms-programs' ),
-					'type'			=> 'image',
-					'default'		=> '',
-					'placeholder'	=> ''
-				),
-				array(
-					'id' 			=> 'multi_select_box',
-					'label'			=> __( 'A Multi-Select Box', 'power-of-moms-programs' ),
-					'description'	=> __( 'A standard multi-select box - the saved data is stored as an array.', 'power-of-moms-programs' ),
-					'type'			=> 'select_multi',
-					'options'		=> array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
-					'default'		=> array( 'linux' )
-				)
-			)
-		);
+        // Format the programs
+        $programs = [ ];
+        foreach ( $files as $file ) {
+            $key     = str_replace( "class-", "", $file );
+            $key     = str_replace( ".php", "", $key );
+            $program = ucwords( str_replace( "-", " ", $key ) );
+            if ( strpos( $key, "-settings" ) ) {
+                $programs[ str_replace( "-settings", "", $key ) ]['has-settings'] = true;
+            } else {
+                $programs[ $key ]['name'] = $program;
+                if ( empty( $programs[ $key ]['has-settings'] ) ) {
+                    $programs[ $key ]['has-settings'] = false;
+                }
+            }
+        }
 
-		foreach($this->getActivePrograms() as $program) {
-			$programs = $this->getAvailablePrograms();
-			if( $programs[$program]['has-settings'])
-			$settings[$program] = array(
-				'title'					=> __( $program, 'power-of-moms-programs' ),
-				'description'			=> __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
-				'fields'				=> array(
+        return $programs;
+    }
 
-				)
-			);
-		}
+    public function getActivePrograms() {
+        return get_option( 'pom_active_programs' );
+    }
 
-		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
+    public function loadActivePrograms() {
+        $programs = [ ];
+        foreach ( $this->getActivePrograms() as $program ) {
+            if ( array_key_exists( $program, $this->getAvailablePrograms() ) ) {
+                require_once( $this->parent->dir . '/includes/programs/class-' . $program . '.php' );
+                $classname            = "POM_" . str_replace( " ", "_", ucwords( str_replace( "-", " ", $program ) ) );
+                $programs[ $program ] = new $classname;
+            }
+        }
 
-		return $settings;
-	}
+        return $programs;
+    }
 
-	/**
-	 * Register plugin settings
-	 * @return void
-	 */
-	public function register_settings () {
-		if ( is_array( $this->settings ) ) {
 
-			// Check posted/selected tab
-			$current_section = '';
-			if ( isset( $_POST['tab'] ) && $_POST['tab'] ) {
-				$current_section = $_POST['tab'];
-			} else {
-				if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-					$current_section = $_GET['tab'];
-				}
-			}
+    /**
+     * Build settings fields
+     * @return array Fields to be displayed on settings page
+     */
+    private function settings_fields() {
 
-			foreach ( $this->settings as $section => $data ) {
+        $availablePrograms    = array_map( function ( $program ) {
+                return $program['name'];
+            },
+            $this->getAvailablePrograms()
+        );
+        $settings['standard'] = array(
+            'title'       => __( 'Active Programs', 'power-of-moms-programs' ),
+            'description' => __( 'Select all the active programs you want to have active.', 'power-of-moms-programs' ),
+            'fields'      => array(
+                array(
+                    'id'          => 'active_programs',
+                    'label'       => __( 'Active Programs', 'power-of-moms-programs' ),
+                    'description' => __( 'Select the programs you want to be active.', 'power-of-moms-programs' ),
+                    'type'        => 'checkbox_multi',
+                    'options'     => $availablePrograms,
+                    'default'     => array()
+                )
+            )
+        );
 
-				if ( $current_section && $current_section != $section ) continue;
+        $settings['extra'] = array(
+            'title'       => __( 'Extra', 'power-of-moms-programs' ),
+            'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
+            'fields'      => array(
+                array(
+                    'id'          => 'number_field',
+                    'label'       => __( 'A Number', 'power-of-moms-programs' ),
+                    'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'power-of-moms-programs' ),
+                    'type'        => 'number',
+                    'default'     => '',
+                    'placeholder' => __( '42', 'power-of-moms-programs' )
+                ),
+                array(
+                    'id'          => 'colour_picker',
+                    'label'       => __( 'Pick a colour', 'power-of-moms-programs' ),
+                    'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'power-of-moms-programs' ),
+                    'type'        => 'color',
+                    'default'     => '#21759B'
+                ),
+                array(
+                    'id'          => 'an_image',
+                    'label'       => __( 'An Image', 'power-of-moms-programs' ),
+                    'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'power-of-moms-programs' ),
+                    'type'        => 'image',
+                    'default'     => '',
+                    'placeholder' => ''
+                ),
+                array(
+                    'id'          => 'multi_select_box',
+                    'label'       => __( 'A Multi-Select Box', 'power-of-moms-programs' ),
+                    'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'power-of-moms-programs' ),
+                    'type'        => 'select_multi',
+                    'options'     => array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
+                    'default'     => array( 'linux' )
+                )
+            )
+        );
 
-				// Add section to page
-				add_settings_section( $section, $data['title'], array( $this, 'settings_section' ), $this->parent->_token . '_settings' );
+        foreach ( $this->getActivePrograms() as $program ) {
+            $programs = $this->getAvailablePrograms();
+            if ( $programs[ $program ]['has-settings'] ) {
+                $settings[ $program ] = array(
+                    'title'       => __( $program, 'power-of-moms-programs' ),
+                    'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
+                    'fields'      => array()
+                );
+            }
+        }
 
-				foreach ( $data['fields'] as $field ) {
+        $settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
-					// Validation callback for field
-					$validation = '';
-					if ( isset( $field['callback'] ) ) {
-						$validation = $field['callback'];
-					}
+        return $settings;
+    }
 
-					// Register field
-					$option_name = $this->base . $field['id'];
-					register_setting( $this->parent->_token . '_settings', $option_name, $validation );
+    /**
+     * Register plugin settings
+     * @return void
+     */
+    public function register_settings() {
+        if ( is_array( $this->settings ) ) {
 
-					// Add field to page
-					add_settings_field( $field['id'], $field['label'], array( $this->parent->admin, 'display_field' ), $this->parent->_token . '_settings', $section, array( 'field' => $field, 'prefix' => $this->base ) );
-				}
+            // Check posted/selected tab
+            $current_section = '';
+            if ( isset( $_POST['tab'] ) && $_POST['tab'] ) {
+                $current_section = $_POST['tab'];
+            } else {
+                if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
+                    $current_section = $_GET['tab'];
+                }
+            }
 
-				if ( ! $current_section ) break;
-			}
-		}
-	}
+            foreach ( $this->settings as $section => $data ) {
 
-	public function settings_section ( $section ) {
-		$html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
-		echo $html;
-	}
+                if ( $current_section && $current_section != $section ) {
+                    continue;
+                }
 
-	/**
-	 * Load settings page content
-	 * @return void
-	 */
-	public function settings_page () {
+                // Add section to page
+                add_settings_section( $section, $data['title'], array(
+                        $this,
+                        'settings_section'
+                    ), $this->parent->_token . '_settings' );
 
-		// Build page HTML
-		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'POM Settings' , 'power-of-moms-programs' ) . '</h2>' . "\n";
+                foreach ( $data['fields'] as $field ) {
 
-			$tab = '';
-			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-				$tab .= $_GET['tab'];
-			}
+                    // Validation callback for field
+                    $validation = '';
+                    if ( isset( $field['callback'] ) ) {
+                        $validation = $field['callback'];
+                    }
 
-			// Show page tabs
-			if ( is_array( $this->settings ) && 1 < count( $this->settings ) ) {
+                    // Register field
+                    $option_name = $this->base . $field['id'];
+                    register_setting( $this->parent->_token . '_settings', $option_name, $validation );
 
-				$html .= '<h2 class="nav-tab-wrapper">' . "\n";
+                    // Add field to page
+                    add_settings_field( $field['id'], $field['label'], array(
+                            $this->parent->admin,
+                            'display_field'
+                        ), $this->parent->_token . '_settings', $section, array(
+                            'field'  => $field,
+                            'prefix' => $this->base
+                        ) );
+                }
 
-				$c = 0;
-				foreach ( $this->settings as $section => $data ) {
+                if ( !$current_section ) {
+                    break;
+                }
+            }
+        }
+    }
 
-					// Set tab class
-					$class = 'nav-tab';
-					if ( ! isset( $_GET['tab'] ) ) {
-						if ( 0 == $c ) {
-							$class .= ' nav-tab-active';
-						}
-					} else {
-						if ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
-							$class .= ' nav-tab-active';
-						}
-					}
+    public function settings_section( $section ) {
+        $html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
+        echo $html;
+    }
 
-					// Set tab link
-					$tab_link = add_query_arg( array( 'tab' => $section ) );
-					if ( isset( $_GET['settings-updated'] ) ) {
-						$tab_link = remove_query_arg( 'settings-updated', $tab_link );
-					}
+    /**
+     * Load settings page content
+     * @return void
+     */
+    public function settings_page() {
 
-					// Output tab
-					$html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . esc_html( $data['title'] ) . '</a>' . "\n";
+        // Build page HTML
+        $html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
+        $html .= '<h2>' . __( 'POM Settings', 'power-of-moms-programs' ) . '</h2>' . "\n";
 
-					++$c;
-				}
+        $tab = '';
+        if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
+            $tab .= $_GET['tab'];
+        }
 
-				$html .= '</h2>' . "\n";
-			}
+        // Show page tabs
+        if ( is_array( $this->settings ) && 1 < count( $this->settings ) ) {
 
-			$html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
+            $html .= '<h2 class="nav-tab-wrapper">' . "\n";
 
-				// Get settings fields
-				ob_start();
-				settings_fields( $this->parent->_token . '_settings' );
-				do_settings_sections( $this->parent->_token . '_settings' );
-				$html .= ob_get_clean();
+            $c = 0;
+            foreach ( $this->settings as $section => $data ) {
 
-				$html .= '<p class="submit">' . "\n";
-					$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
-					$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings' , 'power-of-moms-programs' ) ) . '" />' . "\n";
-				$html .= '</p>' . "\n";
-			$html .= '</form>' . "\n";
-		$html .= '</div>' . "\n";
+                // Set tab class
+                $class = 'nav-tab';
+                if ( !isset( $_GET['tab'] ) ) {
+                    if ( 0 == $c ) {
+                        $class .= ' nav-tab-active';
+                    }
+                } else {
+                    if ( isset( $_GET['tab'] ) && $section == $_GET['tab'] ) {
+                        $class .= ' nav-tab-active';
+                    }
+                }
 
-		echo $html;
-	}
+                // Set tab link
+                $tab_link = add_query_arg( array( 'tab' => $section ) );
+                if ( isset( $_GET['settings-updated'] ) ) {
+                    $tab_link = remove_query_arg( 'settings-updated', $tab_link );
+                }
 
-	/**
-	 * Main Power_of_Moms_Programs_Settings Instance
-	 *
-	 * Ensures only one instance of Power_of_Moms_Programs_Settings is loaded or can be loaded.
-	 *
-	 * @since 1.0.0
-	 * @static
-	 * @see Power_of_Moms_Programs()
-	 * @return Main Power_of_Moms_Programs_Settings instance
-	 */
-	public static function instance ( $parent ) {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self( $parent );
-		}
-		return self::$_instance;
-	} // End instance()
+                // Output tab
+                $html .= '<a href="' . $tab_link . '" class="' . esc_attr( $class ) . '">' . esc_html( $data['title'] ) . '</a>' . "\n";
 
-	/**
-	 * Cloning is forbidden.
-	 *
-	 * @since 1.0.0
-	 */
-	public function __clone () {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
-	} // End __clone()
+                ++ $c;
+            }
 
-	/**
-	 * Unserializing instances of this class is forbidden.
-	 *
-	 * @since 1.0.0
-	 */
-	public function __wakeup () {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
-	} // End __wakeup()
+            $html .= '</h2>' . "\n";
+        }
+
+        $html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
+
+        // Get settings fields
+        ob_start();
+        settings_fields( $this->parent->_token . '_settings' );
+        do_settings_sections( $this->parent->_token . '_settings' );
+        $html .= ob_get_clean();
+
+        $html .= '<p class="submit">' . "\n";
+        $html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
+        $html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings', 'power-of-moms-programs' ) ) . '" />' . "\n";
+        $html .= '</p>' . "\n";
+        $html .= '</form>' . "\n";
+        $html .= '</div>' . "\n";
+
+        echo $html;
+    }
+
+    /**
+     * Main Power_of_Moms_Programs_Settings Instance
+     *
+     * Ensures only one instance of Power_of_Moms_Programs_Settings is loaded or can be loaded.
+     *
+     * @since 1.0.0
+     * @static
+     * @see   Power_of_Moms_Programs()
+     * @return Main Power_of_Moms_Programs_Settings instance
+     */
+    public static function instance( $parent ) {
+        if ( is_null( self::$_instance ) ) {
+            self::$_instance = new self( $parent );
+        }
+
+        return self::$_instance;
+    } // End instance()
+
+    /**
+     * Cloning is forbidden.
+     *
+     * @since 1.0.0
+     */
+    public function __clone() {
+        _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
+    } // End __clone()
+
+    /**
+     * Unserializing instances of this class is forbidden.
+     *
+     * @since 1.0.0
+     */
+    public function __wakeup() {
+        _doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?' ), $this->parent->_version );
+    } // End __wakeup()
 
 }

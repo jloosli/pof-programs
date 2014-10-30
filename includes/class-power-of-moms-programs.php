@@ -228,6 +228,7 @@ class Power_of_Moms_Programs {
 	    load_plugin_textdomain( $domain, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_plugin_textdomain ()
 
+
 	/**
 	 * Main Power_of_Moms_Programs Instance
 	 *

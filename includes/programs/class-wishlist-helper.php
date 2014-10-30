@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Get constants defined and check version
+ * Helper utilities for Wishlist Helper
  */
-class POM_Add_Access {
-    private $debug_on = true,
-        $debug_email = "jloosli@gmail.com",
-        $slug = 'pom-addprogram';
+class POM_Wishlist_Helper {
 
     function __construct() {
 
