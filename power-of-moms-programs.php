@@ -1,11 +1,11 @@
 <?php
 /*
  * Plugin Name: Power of Moms Programs
- * Version: 1.0
- * Plugin URI: http://www.hughlashbrooke.com/
- * Description: This is your starter template for your next WordPress plugin.
- * Author: Hugh Lashbrooke
- * Author URI: http://www.hughlashbrooke.com/
+ * Version: 2.0
+ * Plugin URI: https://github.com/jloosli/pom-programs/
+ * Description: Power of Moms Programs
+ * Author: Jared Loosli
+ * Author URI: https://github.com/jloosli/
  * Requires at least: 4.0
  * Tested up to: 4.0
  *
@@ -13,7 +13,7 @@
  * Domain Path: /lang/
  *
  * @package WordPress
- * @author Hugh Lashbrooke
+ * @author Jared Loosli
  * @since 1.0.0
  */
 

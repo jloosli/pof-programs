@@ -39,7 +39,7 @@ class Power_of_Moms_Programs_Settings {
 	public function __construct ( $parent ) {
 		$this->parent = $parent;
 
-		$this->base = 'wpt_';
+		$this->base = 'pom_';
 
 		// Initialise settings
 		add_action( 'init', array( $this, 'init_settings' ), 11 );
@@ -67,7 +67,7 @@ class Power_of_Moms_Programs_Settings {
 	 * @return void
 	 */
 	public function add_menu_item () {
-		$page = add_options_page( __( 'Plugin Settings', 'power-of-moms-programs' ) , __( 'Plugin Settings', 'power-of-moms-programs' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
+		$page = add_options_page( __( 'POM Settings', 'power-of-moms-programs' ) , __( 'POM Settings', 'power-of-moms-programs' ) , 'manage_options' , $this->parent->_token . '_settings' ,  array( $this, 'settings_page' ) );
 		add_action( 'admin_print_styles-' . $page, array( $this, 'settings_assets' ) );
 	}
 
@@ -102,77 +102,62 @@ class Power_of_Moms_Programs_Settings {
 	}
 
 	/**
+	 * Get available programs from the programs directory
+	 * @return array
+	 */
+	private function getAvailablePrograms() {
+		// Get the files
+		$files = scandir($this->parent->programs_dir);
+
+		// Return only the classes
+		$files = array_filter($files, function($file) {
+			return strpos($file,'class') === 0;
+		});
+
+		// Format the programs
+		$programs = [];
+		foreach($files as $file) {
+			$key = str_replace("class-","",$file);
+			$key = str_replace(".php","", $key);
+			$program = ucwords(str_replace("-"," ", $key));
+			if(strpos($key,"-settings")) {
+				$programs[str_replace("-settings","",$key)]['has-settings'] = true;
+			} else {
+				$programs[$key]['name'] = $program;
+				if(empty($programs[$key]['has-settings'])){
+					$programs[$key]['has-settings']= false;
+				}
+			}
+		}
+		return $programs;
+	}
+
+	public function getActivePrograms() {
+		return get_option('pom_active_programs');
+	}
+
+	/**
 	 * Build settings fields
 	 * @return array Fields to be displayed on settings page
 	 */
 	private function settings_fields () {
 
+		$availablePrograms    = array_map(function($program){
+				return $program['name'];
+			},
+			$this->getAvailablePrograms()
+		);
 		$settings['standard'] = array(
-			'title'					=> __( 'Standard', 'power-of-moms-programs' ),
-			'description'			=> __( 'These are fairly standard form input fields.', 'power-of-moms-programs' ),
+			'title'					=> __( 'Active Programs', 'power-of-moms-programs' ),
+			'description'			=> __( 'Select all the active programs you want to have active.', 'power-of-moms-programs' ),
 			'fields'				=> array(
 				array(
-					'id' 			=> 'text_field',
-					'label'			=> __( 'Some Text' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This is a standard text field.', 'power-of-moms-programs' ),
-					'type'			=> 'text',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'power-of-moms-programs' )
-				),
-				array(
-					'id' 			=> 'password_field',
-					'label'			=> __( 'A Password' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This is a standard password field.', 'power-of-moms-programs' ),
-					'type'			=> 'password',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'power-of-moms-programs' )
-				),
-				array(
-					'id' 			=> 'secret_text_field',
-					'label'			=> __( 'Some Secret Text' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'power-of-moms-programs' ),
-					'type'			=> 'text_secret',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text', 'power-of-moms-programs' )
-				),
-				array(
-					'id' 			=> 'text_block',
-					'label'			=> __( 'A Text Block' , 'power-of-moms-programs' ),
-					'description'	=> __( 'This is a standard text area.', 'power-of-moms-programs' ),
-					'type'			=> 'textarea',
-					'default'		=> '',
-					'placeholder'	=> __( 'Placeholder text for this textarea', 'power-of-moms-programs' )
-				),
-				array(
-					'id' 			=> 'single_checkbox',
-					'label'			=> __( 'An Option', 'power-of-moms-programs' ),
-					'description'	=> __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'power-of-moms-programs' ),
-					'type'			=> 'checkbox',
-					'default'		=> ''
-				),
-				array(
-					'id' 			=> 'select_box',
-					'label'			=> __( 'A Select Box', 'power-of-moms-programs' ),
-					'description'	=> __( 'A standard select box.', 'power-of-moms-programs' ),
-					'type'			=> 'select',
-					'options'		=> array( 'drupal' => 'Drupal', 'joomla' => 'Joomla', 'wordpress' => 'WordPress' ),
-					'default'		=> 'wordpress'
-				),
-				array(
-					'id' 			=> 'radio_buttons',
-					'label'			=> __( 'Some Options', 'power-of-moms-programs' ),
-					'description'	=> __( 'A standard set of radio buttons.', 'power-of-moms-programs' ),
-					'type'			=> 'radio',
-					'options'		=> array( 'superman' => 'Superman', 'batman' => 'Batman', 'ironman' => 'Iron Man' ),
-					'default'		=> 'batman'
-				),
-				array(
-					'id' 			=> 'multiple_checkboxes',
-					'label'			=> __( 'Some Items', 'power-of-moms-programs' ),
-					'description'	=> __( 'You can select multiple items and they will be stored as an array.', 'power-of-moms-programs' ),
+					'id' 			=> 'active_programs',
+					'label'			=> __( 'Active Programs', 'power-of-moms-programs' ),
+					'description'	=> __( 'Select the programs you want to be active.', 'power-of-moms-programs' ),
 					'type'			=> 'checkbox_multi',
-					'options'		=> array( 'square' => 'Square', 'circle' => 'Circle', 'rectangle' => 'Rectangle', 'triangle' => 'Triangle' ),
-					'default'		=> array( 'circle', 'triangle' )
+					'options'		=> $availablePrograms,
+					'default'		=> array()
 				)
 			)
 		);
@@ -214,6 +199,18 @@ class Power_of_Moms_Programs_Settings {
 				)
 			)
 		);
+
+		foreach($this->getActivePrograms() as $program) {
+			$programs = $this->getAvailablePrograms();
+			if( $programs[$program]['has-settings'])
+			$settings[$program] = array(
+				'title'					=> __( $program, 'power-of-moms-programs' ),
+				'description'			=> __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
+				'fields'				=> array(
+
+				)
+			);
+		}
 
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
@@ -278,7 +275,7 @@ class Power_of_Moms_Programs_Settings {
 
 		// Build page HTML
 		$html = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'Plugin Settings' , 'power-of-moms-programs' ) . '</h2>' . "\n";
+			$html .= '<h2>' . __( 'POM Settings' , 'power-of-moms-programs' ) . '</h2>' . "\n";
 
 			$tab = '';
 			if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {

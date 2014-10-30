@@ -61,6 +61,14 @@ class Power_of_Moms_Programs {
 	public $assets_dir;
 
 	/**
+	 * The programs directory.
+	 * @var     string
+	 * @access  public
+	 * @since   2.0.0
+	 */
+	public $programs_dir;
+
+	/**
 	 * The plugin assets URL.
 	 * @var     string
 	 * @access  public
@@ -80,9 +88,11 @@ class Power_of_Moms_Programs {
 	 * Constructor function.
 	 * @access  public
 	 * @since   1.0.0
-	 * @return  void
+	 *
+	 * @param string $file
+	 * @param string $version
 	 */
-	public function __construct ( $file = '', $version = '1.0.0' ) {
+	public function __construct ( $file = '', $version = '2.0.0' ) {
 		$this->_version = $version;
 		$this->_token = 'power_of_moms_programs';
 
@@ -91,6 +101,7 @@ class Power_of_Moms_Programs {
 		$this->dir = dirname( $this->file );
 		$this->assets_dir = trailingslashit( $this->dir ) . 'assets';
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
+		$this->programs_dir = trailingslashit( $this->dir ) . 'includes/programs';
 
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
