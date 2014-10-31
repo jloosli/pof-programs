@@ -244,11 +244,8 @@ class Power_of_Moms_Programs_Settings {
         foreach ( $this->getActivePrograms() as $program ) {
             $programs = $this->getAvailablePrograms();
             if ( $programs[ $program ]['has-settings'] ) {
-                $settings[ $program ] = array(
-                    'title'       => __( $program, 'power-of-moms-programs' ),
-                    'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
-                    'fields'      => array()
-                );
+                $theProgramSettings = $this->programs[ $program ]->getSettingsInstance();
+                $settings[$program] = $theProgramSettings->getSettings();
             }
         }
 
