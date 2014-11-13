@@ -7,7 +7,11 @@ class POM_My_Programs {
 
     public static $settingsInstance;
 
-    function __construct() {
+    function __construct($parent = '') {
+//        $this->parent = $parent;
+        require_once( __DIR__ . '/../../../wishlist-member/core/api-helper/class-api-methods.php' );
+        $api_methods = new WLMAPIMethods();
+        $this->api   = $api_methods->loadAPI();
 
         //Actions
         //Filters
@@ -55,23 +59,38 @@ class POM_My_Programs {
     }
 
     private function getCurrentUserPrograms( $user_id ) {
-        if(user_can($user_id, 'manage_options')){
-            $programs = wlmapi_get_levels();
-        } else {
-            $programs     = wlmapi_get_member_levels( $user_id );
-        }
-        $the_programs = array_map( function ( $program ) {
-            $theLevel = wlmapi_get_level( $program->Level_ID );
-            $theLink  = '';
-            if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
-                $theLink   = get_page_link($theLevel['level']['after_registration_redirect']);
-            };
+//        if ( user_can( $user_id, 'manage_options' ) ) {
+//            $programs     = wlmapi_get_levels();
+//            $the_programs = array_map( function ( $program ) {
+////                $theLevel = wlmapi_get_level( (int) $program->id);
+//                $result = $this->api->get("/levels/{$program->id}/");
+//                $theLevel = unserialize($result);
+//                $theLink  = '';
+//                if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
+//                    $theLink = get_page_link( $theLevel['level']['after_registration_redirect'] );
+//                };
+//
+//                return array(
+//                    'name' => $program->Name,
+//                    'link' => $theLink
+//                );
+//            }, $programs['levels']['level'] );
+//        } else {
+            $programs = wlmapi_get_member_levels( $user_id );
 
-            return array(
-                'name' => $program->Name,
-                'link' => $theLink
-            );
-        }, $programs );
+            $the_programs = array_map( function ( $program ) {
+                $theLevel = wlmapi_get_level( $program->Level_ID );
+                $theLink  = '';
+                if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
+                    $theLink = get_page_link( $theLevel['level']['after_registration_redirect'] );
+                };
+
+                return array(
+                    'name' => $program->Name,
+                    'link' => $theLink
+                );
+            }, $programs );
+//        }
 
         return $the_programs;
     }
