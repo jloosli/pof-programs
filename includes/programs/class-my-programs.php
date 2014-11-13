@@ -55,8 +55,11 @@ class POM_My_Programs {
     }
 
     private function getCurrentUserPrograms( $user_id ) {
-        $results      = array();
-        $programs     = wlmapi_get_member_levels( $user_id );
+        if(user_can($user_id, 'manage_options')){
+            $programs = wlmapi_get_levels();
+        } else {
+            $programs     = wlmapi_get_member_levels( $user_id );
+        }
         $the_programs = array_map( function ( $program ) {
             $theLevel = wlmapi_get_level( $program->Level_ID );
             $theLink  = '';
