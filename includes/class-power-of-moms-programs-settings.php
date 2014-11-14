@@ -160,7 +160,7 @@ class Power_of_Moms_Programs_Settings {
     }
 
     public function getActivePrograms() {
-        return get_option( 'pom_active_programs' );
+        return get_option( 'pom_active_programs', [] );
     }
 
     public function loadActivePrograms() {

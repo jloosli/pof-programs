@@ -37,16 +37,19 @@ class POM_My_Programs {
             'nosubscriptions' => "You haven't subscribed to any programs. Go check out some of <a href='/store'>our programs</a> and see what may be of use to you."
         ), $atts ) );
         $title  = $showtitle == "true" ? "<h2>$title</h2>" : "";
-        $output = "<div id='pom_userprograms'>$title";
+        $output = "<div id='pom_userprograms'>$title\n";
+        $output .= "<style>#pom_userprograms div {float: left; width: 100%}</style>";
         if ( is_user_logged_in() ) {
             $progs = $this->getCurrentUserPrograms( get_current_user_id() );
             if ( $progs ) {
-                $output .= "<dl>";
                 foreach ( $progs as $prog ) {
-                    $output .= "<dt>";
-                    $output .= sprintf( "<dt><a href='%s'>%s</a></dt>", $prog['link'], $prog['name'] );
+                    $image = '';
+                    if(!empty($prog['image'])) {
+                        $image = sprintf("<img class='alignleft' src='%s' width='88' height='88' />", $prog['image']);
+                    }
+                    $output .= sprintf( "<div><a href='%s'>%s%s</a></div>", $prog['link'], $image, $prog['name'] );
                 }
-                $output .= "</dl>";
+                $output .= "</div>";
             } else {
                 $output .= "<div class='message'>$nosubscriptions</div>";
             }
@@ -81,13 +84,16 @@ class POM_My_Programs {
             $the_programs = array_map( function ( $program ) {
                 $theLevel = wlmapi_get_level( $program->Level_ID );
                 $theLink  = '';
+                $theImage = '';
                 if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
                     $theLink = get_page_link( $theLevel['level']['after_registration_redirect'] );
+                    $theImage = wp_get_attachment_thumb_url(get_post_thumbnail_id($theLevel['level']['after_registration_redirect']));
                 };
 
                 return array(
                     'name' => $program->Name,
-                    'link' => $theLink
+                    'link' => $theLink,
+                    'image'=> $theImage
                 );
             }, $programs );
 //        }
