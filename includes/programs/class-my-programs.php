@@ -62,30 +62,15 @@ class POM_My_Programs {
     }
 
     private function getCurrentUserPrograms( $user_id ) {
-//        if ( user_can( $user_id, 'manage_options' ) ) {
-//            $programs     = wlmapi_get_levels();
-//            $the_programs = array_map( function ( $program ) {
-////                $theLevel = wlmapi_get_level( (int) $program->id);
-//                $result = $this->api->get("/levels/{$program->id}/");
-//                $theLevel = unserialize($result);
-//                $theLink  = '';
-//                if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
-//                    $theLink = get_page_link( $theLevel['level']['after_registration_redirect'] );
-//                };
-//
-//                return array(
-//                    'name' => $program->Name,
-//                    'link' => $theLink
-//                );
-//            }, $programs['levels']['level'] );
-//        } else {
+        $the_programs = [];
+        if(function_exists('wlmapi_get_member_levels')) {
             $programs = wlmapi_get_member_levels( $user_id );
 
             $the_programs = array_map( function ( $program ) {
                 $theLevel = wlmapi_get_level( $program->Level_ID );
                 $theLink  = '';
                 $theImage = '';
-                if ( is_int( $theLevel['level']['after_registration_redirect'] ) ) {
+                if ( is_numeric( $theLevel['level']['after_registration_redirect'] ) ) {
                     $theLink = get_page_link( $theLevel['level']['after_registration_redirect'] );
                     $theImage = wp_get_attachment_thumb_url(get_post_thumbnail_id($theLevel['level']['after_registration_redirect']));
                 };
@@ -96,7 +81,7 @@ class POM_My_Programs {
                     'image'=> $theImage
                 );
             }, $programs );
-//        }
+        }
 
         return $the_programs;
     }
