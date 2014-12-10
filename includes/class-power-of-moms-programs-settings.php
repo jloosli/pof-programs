@@ -203,43 +203,43 @@ class Power_of_Moms_Programs_Settings {
             )
         );
 
-        $settings['extra'] = array(
-            'title'       => __( 'Extra', 'power-of-moms-programs' ),
-            'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
-            'fields'      => array(
-                array(
-                    'id'          => 'number_field',
-                    'label'       => __( 'A Number', 'power-of-moms-programs' ),
-                    'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'power-of-moms-programs' ),
-                    'type'        => 'number',
-                    'default'     => '',
-                    'placeholder' => __( '42', 'power-of-moms-programs' )
-                ),
-                array(
-                    'id'          => 'colour_picker',
-                    'label'       => __( 'Pick a colour', 'power-of-moms-programs' ),
-                    'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'power-of-moms-programs' ),
-                    'type'        => 'color',
-                    'default'     => '#21759B'
-                ),
-                array(
-                    'id'          => 'an_image',
-                    'label'       => __( 'An Image', 'power-of-moms-programs' ),
-                    'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'power-of-moms-programs' ),
-                    'type'        => 'image',
-                    'default'     => '',
-                    'placeholder' => ''
-                ),
-                array(
-                    'id'          => 'multi_select_box',
-                    'label'       => __( 'A Multi-Select Box', 'power-of-moms-programs' ),
-                    'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'power-of-moms-programs' ),
-                    'type'        => 'select_multi',
-                    'options'     => array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
-                    'default'     => array( 'linux' )
-                )
-            )
-        );
+//        $settings['extra'] = array(
+//            'title'       => __( 'Extra', 'power-of-moms-programs' ),
+//            'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'power-of-moms-programs' ),
+//            'fields'      => array(
+//                array(
+//                    'id'          => 'number_field',
+//                    'label'       => __( 'A Number', 'power-of-moms-programs' ),
+//                    'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'power-of-moms-programs' ),
+//                    'type'        => 'number',
+//                    'default'     => '',
+//                    'placeholder' => __( '42', 'power-of-moms-programs' )
+//                ),
+//                array(
+//                    'id'          => 'colour_picker',
+//                    'label'       => __( 'Pick a colour', 'power-of-moms-programs' ),
+//                    'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'power-of-moms-programs' ),
+//                    'type'        => 'color',
+//                    'default'     => '#21759B'
+//                ),
+//                array(
+//                    'id'          => 'an_image',
+//                    'label'       => __( 'An Image', 'power-of-moms-programs' ),
+//                    'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'power-of-moms-programs' ),
+//                    'type'        => 'image',
+//                    'default'     => '',
+//                    'placeholder' => ''
+//                ),
+//                array(
+//                    'id'          => 'multi_select_box',
+//                    'label'       => __( 'A Multi-Select Box', 'power-of-moms-programs' ),
+//                    'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'power-of-moms-programs' ),
+//                    'type'        => 'select_multi',
+//                    'options'     => array( 'linux' => 'Linux', 'mac' => 'Mac', 'windows' => 'Windows' ),
+//                    'default'     => array( 'linux' )
+//                )
+//            )
+//        );
 
         foreach ( $this->getActivePrograms() as $program ) {
             $programs = $this->getAvailablePrograms();
@@ -381,8 +381,8 @@ class Power_of_Moms_Programs_Settings {
         $html .= '</p>' . "\n";
         $html .= '</form>' . "\n";
         $html .= '</div>' . "\n";
-
         echo $html;
+        do_action('pom_programs_settings_admin_end');
     }
 
     /**
