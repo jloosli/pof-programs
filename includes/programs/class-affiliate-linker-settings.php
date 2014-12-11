@@ -8,7 +8,7 @@ class POM_Affiliate_Linker_Settings {
 
     public function add_script() {
         $javascript = <<<JS
-function runAffiliateScript(me) {
+function pom_runAffiliateScript(me) {
     var message = document.createElement('span');
     me.parentNode.replaceChild(message,me);
     message.innerHTML = 'Working...';
@@ -45,7 +45,7 @@ JS;
                 ),
                 array(
                     'id'    => 'pom_amazon_affiliate_run_now',
-                    'label' => sprintf( '<a class="button" onclick="%s">%s</a>', 'runAffiliateScript(this);', __( 'Run amazon affiliate script now', 'power-of-moms-programs' ) ),
+                    'label' => sprintf( '<a class="button" onclick="%s">%s</a>', 'pom_runAffiliateScript(this);', __( 'Run amazon affiliate script now', 'power-of-moms-programs' ) ),
                 )
             )
         );

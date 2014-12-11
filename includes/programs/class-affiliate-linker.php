@@ -6,6 +6,12 @@
  * Date: 12/10/14
  * Time: 9:51 AM
  */
+
+function POM_Affiliate_Linker_CRON () {
+    $linker = new POM_Affiliate_Linker();
+    return $linker->add_amazon();
+}
+
 class POM_Affiliate_Linker {
     public static $settingsInstance;
 
@@ -36,11 +42,11 @@ class POM_Affiliate_Linker {
 
     function activation() {
         if ( !wp_next_scheduled( 'affiliate_linker_event' ) ) {
-            wp_schedule_event( time(), 'daily', array( $this, 'add_amazon' ) );
+            wp_schedule_event( time(), 'daily', 'POM_Affiliate_Linker_CRON' );
         }
     }
 
-    function add_amazon_tag( $matches ) {
+    public function add_amazon_tag( $matches ) {
 
         $url = parse_url( $matches[2] ); // split url into parts
         if (strpos(strtolower($url['host']),'amazon') === false || (isset( $url['query'] ) && strstr( $url['query'], "tag" ) )) {
@@ -56,7 +62,7 @@ class POM_Affiliate_Linker {
         die;
     }
 
-    function add_amazon() {
+    public function add_amazon() {
 
         global $wpdb;
 
