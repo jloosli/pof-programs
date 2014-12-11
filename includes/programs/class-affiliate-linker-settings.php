@@ -37,7 +37,7 @@ JS;
             'description' => __( 'Settings to add amazon affiliate linking', 'power-of-moms-programs' ),
             'fields'      => array(
                 array(
-                    'id'          => 'pom_amazon_affiliate_id',
+                    'id'          => 'amazon_affiliate_id',
                     'label'       => __( 'Amazon Affiliate ID', 'power-of-moms-programs' ),
                     'description' => __( 'Enter the Amazon Affiliate ID (e.g. thpoofmo0fb-20)', 'power-of-moms-programs' ),
                     'type'        => 'text',
