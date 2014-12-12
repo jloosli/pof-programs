@@ -40,10 +40,27 @@ class POM_Affiliate_Linker {
 
     }
 
-    function activation() {
-        if ( !wp_next_scheduled( 'affiliate_linker_event' ) ) {
-            wp_schedule_event( time(), 'daily', 'POM_Affiliate_Linker_CRON' );
+    function clear_all_crons($hook) {
+        $before = $crons = _get_cron_array();
+
+        if (empty($crons)) {
+            return;
         }
+        foreach ($crons as $timestamp=>$cron) {
+            if (!empty($cron[$hook])) {
+                unset($crons[$timestamp][$hook]);
+            }
+        }
+        _set_cron_array($crons);
+    }
+
+    function activation() {
+        $cron = 'POM_Affiliate_Linker_CRON';
+        if ( !wp_next_scheduled( $cron ) ) {
+            wp_schedule_event( time(), 'daily', $cron );
+        }
+//        $this->clear_all_crons($cron);
+//        wp_clear_scheduled_hook($cron);
     }
 
     public function add_amazon_tag( $matches ) {
