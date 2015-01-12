@@ -14,6 +14,7 @@ class POM_My_Programs {
         $this->api   = $api_methods->loadAPI();
 
         //Actions
+        add_action('user_register', array(&$this, 'add_to_registered_users'), 10, 1);
         //Filters
         //Short codes
         add_shortcode( "pomprograms", array( &$this, "show_programs" ) );
@@ -84,6 +85,19 @@ class POM_My_Programs {
         }
 
         return $the_programs;
+    }
+
+    /*
+     * Add user to "Registered Users" level once they're registered.
+     */
+    public function add_to_registered_users($user_id) {
+        $level_id = 1415908207; // Registered Users
+        $this->api->return_format='php';
+
+        $data = array(
+            'Users' => array($user_id)
+        );
+        $response = $this->api->post("/levels/{$level_id}/members", $data);
     }
 }
 
