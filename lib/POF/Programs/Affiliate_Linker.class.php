@@ -92,12 +92,6 @@ class Affiliate_Linker
     {
 
         global $wpdb;
-        echo json_encode([
-            'success' => true,
-            'message' => "This got called"
-        ]);
-        return;
-
 
         $has_amazon = $wpdb->get_results(<<<sql
         SELECT ID, post_content
@@ -129,7 +123,8 @@ sql
         }
         echo json_encode([
             'success' => true,
-            'message' => sprintf("Replaced %d urls in %d posts (%0.2f%%)", $changeCount, count($has_amazon), $changeCount / count($has_amazon))
+            'message' => sprintf("Replaced %d urls in %d posts (%0.2f%%)", $changeCount, count($has_amazon),
+                count($has_amazon)>0 ? $changeCount / count($has_amazon):0)
         ]);
 
     }
