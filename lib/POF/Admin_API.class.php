@@ -1,8 +1,9 @@
 <?php
 
+namespace POF;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Power_of_Moms_Programs_Admin_API {
+class Admin_API {
 
 	/**
 	 * Constructor function
@@ -156,8 +157,8 @@ class Power_of_Moms_Programs_Admin_API {
 					$image_thumb = wp_get_attachment_thumb_url( $data );
 				}
 				$html .= '<img id="' . $option_name . '_preview" class="image_preview" src="' . $image_thumb . '" /><br/>' . "\n";
-				$html .= '<input id="' . $option_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'power-of-moms-programs' ) . '" data-uploader_button_text="' . __( 'Use image' , 'power-of-moms-programs' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'power-of-moms-programs' ) . '" />' . "\n";
-				$html .= '<input id="' . $option_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'power-of-moms-programs' ) . '" />' . "\n";
+				$html .= '<input id="' . $option_name . '_button" type="button" data-uploader_title="' . __( 'Upload an image' , 'power-of-families-programs' ) . '" data-uploader_button_text="' . __( 'Use image' , 'power-of-families-programs' ) . '" class="image_upload_button button" value="'. __( 'Upload new image' , 'power-of-families-programs' ) . '" />' . "\n";
+				$html .= '<input id="' . $option_name . '_delete" type="button" class="image_delete_button button" value="'. __( 'Remove image' , 'power-of-families-programs' ) . '" />' . "\n";
 				$html .= '<input id="' . $option_name . '" class="image_data_field" type="hidden" name="' . $option_name . '" value="' . $data . '"/><br/>' . "\n";
 			break;
 

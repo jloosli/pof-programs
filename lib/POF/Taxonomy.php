@@ -1,8 +1,9 @@
 <?php
 
+namespace POF;
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Power_of_Moms_Programs_Taxonomy {
+class Taxonomy {
 
 	/**
 	 * The name for the taxonomy.
@@ -63,20 +64,20 @@ class Power_of_Moms_Programs_Taxonomy {
             'name' => $this->plural,
             'singular_name' => $this->single,
             'menu_name' => $this->plural,
-            'all_items' => sprintf( __( 'All %s' , 'power-of-moms-programs' ), $this->plural ),
-            'edit_item' => sprintf( __( 'Edit %s' , 'power-of-moms-programs' ), $this->single ),
-            'view_item' => sprintf( __( 'View %s' , 'power-of-moms-programs' ), $this->single ),
-            'update_item' => sprintf( __( 'Update %s' , 'power-of-moms-programs' ), $this->single ),
-            'add_new_item' => sprintf( __( 'Add New %s' , 'power-of-moms-programs' ), $this->single ),
-            'new_item_name' => sprintf( __( 'New %s Name' , 'power-of-moms-programs' ), $this->single ),
-            'parent_item' => sprintf( __( 'Parent %s' , 'power-of-moms-programs' ), $this->single ),
-            'parent_item_colon' => sprintf( __( 'Parent %s:' , 'power-of-moms-programs' ), $this->single ),
-            'search_items' =>  sprintf( __( 'Search %s' , 'power-of-moms-programs' ), $this->plural ),
-            'popular_items' =>  sprintf( __( 'Popular %s' , 'power-of-moms-programs' ), $this->plural ),
-            'separate_items_with_commas' =>  sprintf( __( 'Separate %s with commas' , 'power-of-moms-programs' ), $this->plural ),
-            'add_or_remove_items' =>  sprintf( __( 'Add or remove %s' , 'power-of-moms-programs' ), $this->plural ),
-            'choose_from_most_used' =>  sprintf( __( 'Choose from the most used %s' , 'power-of-moms-programs' ), $this->plural ),
-            'not_found' =>  sprintf( __( 'No %s found' , 'power-of-moms-programs' ), $this->plural ),
+            'all_items' => sprintf( __( 'All %s' , 'power-of-families-programs' ), $this->plural ),
+            'edit_item' => sprintf( __( 'Edit %s' , 'power-of-families-programs' ), $this->single ),
+            'view_item' => sprintf( __( 'View %s' , 'power-of-families-programs' ), $this->single ),
+            'update_item' => sprintf( __( 'Update %s' , 'power-of-families-programs' ), $this->single ),
+            'add_new_item' => sprintf( __( 'Add New %s' , 'power-of-families-programs' ), $this->single ),
+            'new_item_name' => sprintf( __( 'New %s Name' , 'power-of-families-programs' ), $this->single ),
+            'parent_item' => sprintf( __( 'Parent %s' , 'power-of-families-programs' ), $this->single ),
+            'parent_item_colon' => sprintf( __( 'Parent %s:' , 'power-of-families-programs' ), $this->single ),
+            'search_items' =>  sprintf( __( 'Search %s' , 'power-of-families-programs' ), $this->plural ),
+            'popular_items' =>  sprintf( __( 'Popular %s' , 'power-of-families-programs' ), $this->plural ),
+            'separate_items_with_commas' =>  sprintf( __( 'Separate %s with commas' , 'power-of-families-programs' ), $this->plural ),
+            'add_or_remove_items' =>  sprintf( __( 'Add or remove %s' , 'power-of-families-programs' ), $this->plural ),
+            'choose_from_most_used' =>  sprintf( __( 'Choose from the most used %s' , 'power-of-families-programs' ), $this->plural ),
+            'not_found' =>  sprintf( __( 'No %s found' , 'power-of-families-programs' ), $this->plural ),
         );
 
         $args = array(
