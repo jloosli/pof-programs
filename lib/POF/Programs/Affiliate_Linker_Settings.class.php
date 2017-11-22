@@ -30,7 +30,7 @@ JS;
     }
 
     public function enqueue_scripts(){
-        wp_enqueue_script('requirejs');
+//        wp_enqueue_script('requirejs');
     }
 
     /**

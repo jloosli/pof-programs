@@ -244,15 +244,15 @@ class Power_of_Families_Programs
      */
     public function admin_register_scripts()
     {
-        $url = plugins_url('admin/js/admin.min.js', $this->plugin_dir . 'bob');
+        $url = plugins_url('admin/js/admin.js', $this->plugin_dir . 'bob');
         wp_register_script($this->token . '-admin',
-            $url, array('requirejs'),
+            $url, array(),
             $this->_version);
         wp_enqueue_script($this->token . '-admin');
-        wp_register_script('requirejs',
-            'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js',
-            [], null,
-            true);
+//        wp_register_script('requirejs',
+//            'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js',
+//            [], null,
+//            true);
     } // End admin_enqueue_scripts ()
 
     /**

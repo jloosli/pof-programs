@@ -54,17 +54,17 @@ class My_Programs
         ), $atts));
         $title = $showtitle == "true" ? "<h2>$title</h2>" : "";
         $output = "<div id='pof_userprograms'>$title\n";
-        $output .= "<style></style>";
+        $output .= "<style>#pof_userprograms .program {display: block; clear: both;}</style>";
         if (is_user_logged_in()) {
             $progs = $this->getCurrentUserPrograms(get_current_user_id());
             if ($progs) {
                 foreach ($progs as $prog) {
-                    $meta = $this->getProgramMetaFromDescription($prog->group->description);
+                    $meta = $this->getProgramMetaFromDescription($prog->description);
                     $image = '';
                     if (!empty($meta->image)) {
                         $image = sprintf("<img class='alignleft' src='%s' width='88' height='88' />", $meta->image);
                     }
-                    $output .= sprintf("<div><a href='%s'>%s%s</a></div>", $meta->home ? $meta->home : '', $image, stripslashes($prog->name));
+                    $output .= sprintf("<div class='program'><a href='%s'>%s%s</a></div>", !empty($meta->home) ? $meta->home : '', $image, stripslashes($prog->name));
                 }
                 $output .= "</div>";
             } else {
@@ -86,7 +86,7 @@ class My_Programs
             $parts = array_map(trim, explode(":", $line));
             if (count($parts) >= 2) {
                 $attr = strtolower(array_shift($parts));
-                $val = implode('', $parts);
+                $val = implode(':', $parts);
                 $meta->{$attr} = $val;
             }
         }
@@ -110,7 +110,9 @@ class My_Programs
                 $groups_user = new \Groups_User($user_id);
                 // get groups objects
                 $user_groups = $groups_user->groups;
-                $the_programs = $user_groups;
+                $the_programs = array_map(function ($group) {
+                    return $group->group;
+                }, $user_groups);
             }
         }
         return $the_programs;
