@@ -83,7 +83,7 @@ class My_Programs
         $meta = new \stdClass();
         $lines = explode("\n", $description);
         foreach ($lines as $line) {
-            $parts = array_map(trim, explode(":", $line));
+            $parts = array_map('trim', explode(":", $line));
             if (count($parts) >= 2) {
                 $attr = strtolower(array_shift($parts));
                 $val = implode(':', $parts);
