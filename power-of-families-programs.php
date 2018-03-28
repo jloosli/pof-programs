@@ -26,34 +26,9 @@ $Autoloader = new Autoloader();
 // Load Main Programs
 $PowerOfFamiliesPrograms = new \POF\Power_of_Families_Programs(trailingslashit(plugin_dir_path(__FILE__)));
 
-
-//// Load plugin class files
-//require_once('includes/Power_of_Families_Programs.class.php');
-//require_once('includes/Settings.class.php');
-//
-//// Load plugin libraries
-//require_once('includes/lib/Admin_API.class.php');
-//require_once('includes/lib/Post_Type.class.php');
-//require_once('includes/lib/Taxonomy.php');
-
 /**
  * Returns the main instance of Power_of_Moms_Programs to prevent the need to use globals.
  *
  * @since  1.0.0
  * @return object Power_of_Moms_Programs
  */
-//function PowerOfFamiliesPrograms()
-//{
-//    $version = POF_getVersion();
-//    $instance = \POF\Power_of_Families_Programs::instance(__FILE__, $version);
-//
-//    if (is_null($instance->settings)) {
-//        $instance->settings = \POF\Settings::instance($instance);
-//    }
-//
-//    return $instance;
-//}
-//
-//
-//
-//PowerOfFamiliesPrograms();
